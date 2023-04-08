@@ -21,13 +21,18 @@ public class Work {
     @ManyToOne
     @JoinColumn(name = "estate_id", nullable = false)
     Estate estate;
+
     @NotBlank(message = "Необходимо задать формулировку работ")
     String statement;
+
     @Temporal(TemporalType.TIMESTAMP)
     Date publishingDate;
+
     @Temporal(TemporalType.TIMESTAMP)
     Date expirationDate;
+
     @NotBlank(message = "Необходимо выбрать отвественного")
     String responsible;
+
     boolean isDone;
 }
