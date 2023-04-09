@@ -37,7 +37,7 @@ public class WorkController {
         return workMapper.mapToWorkDto(workService.findById(id));
     }
 
-    @PutMapping("/{id}/edit")
+    @PutMapping("/edit")
     public WorkDto editWork(@RequestBody WorkDto editedWorkDto){
         WorkDto workDto = workMapper.mapToWorkDto(workService.findById(editedWorkDto.getId()));
 
