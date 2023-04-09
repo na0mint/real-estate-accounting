@@ -32,4 +32,9 @@ public class EstateServiceImpl implements EstateService {
     public List<Estate> index() {
         return estateRepository.findAll();
     }
+
+    @Override
+    public Estate findById(int id) {
+        return estateRepository.findById(id).orElse(new Estate());
+    }
 }

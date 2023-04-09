@@ -21,6 +21,9 @@ public class SecurityConfig {
         return httpSecurity
                 .authorizeHttpRequests()
                 .requestMatchers("/estate").permitAll()
+                .requestMatchers("/estate/new").permitAll()
+                .requestMatchers("/").permitAll()
+                .requestMatchers("/estate/{id}").permitAll()
                 .and()
                 .httpBasic()
                 .and()

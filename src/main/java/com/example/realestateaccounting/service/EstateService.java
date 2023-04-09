@@ -10,4 +10,6 @@ public interface EstateService {
 
     List<Estate> index();
 
+    Estate findById(int id);
+
 }

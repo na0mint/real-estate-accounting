@@ -1,16 +1,18 @@
 package com.example.realestateaccounting.controller;
 
+import com.example.realestateaccounting.dto.EstateDto;
 import com.example.realestateaccounting.dto.mapper.EstateMapper;
 import com.example.realestateaccounting.service.EstateService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
 @RequestMapping("/estate")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -19,9 +21,19 @@ public class EstateController {
     EstateMapper estateMapper;
 
     @GetMapping()
-    public String index(Model model) {
-        model.addAttribute("estates", estateMapper.maptoEstateDtoList(estateService.index()));
-        return "estateIndex";
+    public List<EstateDto> index() {
+        return estateMapper.maptoEstateDtoList(estateService.index());
+    }
+
+    @PostMapping("/new")
+    @ResponseStatus(HttpStatus.CREATED)
+    public EstateDto addEstate(@RequestBody EstateDto estateDto) {
+        return estateMapper.mapToEstateDto(estateService.save(estateMapper.mapToEstate(estateDto)));
+    }
+
+    @GetMapping("/{id}")
+    public EstateDto showEstate(@PathVariable int id) {
+        return estateMapper.mapToEstateDto(estateService.findById(id));
     }
 
 }
