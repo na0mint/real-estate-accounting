@@ -47,7 +47,7 @@ public class WorkServiceImpl implements WorkService {
         return workRepository.findAll();
     }
 
-    public Work findByIndex(int id){
+    public Work findById(int id){
         return workRepository.findById(id).orElse(new Work());
     }
 }

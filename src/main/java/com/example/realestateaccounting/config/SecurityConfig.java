@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .requestMatchers("/work/new").permitAll()
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/work/{id}").permitAll()
+                .requestMatchers("/work/{id}/edit").permitAll()
                 .and()
                 .httpBasic()
                 .and()

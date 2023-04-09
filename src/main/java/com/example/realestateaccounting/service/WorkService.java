@@ -12,5 +12,5 @@ public interface WorkService {
     List<Work> findWorksByObjectType(String type);
     List<Work> findWorksInProgress();
     List<Work> index();
-    Work findByIndex(int id);
+    Work findById(int id);
 }

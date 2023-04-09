@@ -34,12 +34,12 @@ public class WorkController {
 
     @GetMapping("/{id}")
     public WorkDto showWork(@PathVariable int id){
-        return workMapper.mapToWorkDto(workService.findByIndex(id));
+        return workMapper.mapToWorkDto(workService.findById(id));
     }
 
     @PutMapping("/{id}/edit")
     public WorkDto editWork(@RequestBody WorkDto editedWorkDto){
-        WorkDto workDto = workMapper.mapToWorkDto(workService.findByIndex(editedWorkDto.getId()));
+        WorkDto workDto = workMapper.mapToWorkDto(workService.findById(editedWorkDto.getId()));
 
         workDto.setStatement(editedWorkDto.getStatement());
         workDto.setResponsible(editedWorkDto.getResponsible());
