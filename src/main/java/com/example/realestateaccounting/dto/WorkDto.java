@@ -12,7 +12,6 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WorkDto {
     int id;
-    Estate estate;
     String statement;
     @JsonFormat(pattern="dd-MM-yyyy")
     Date publishingDate;

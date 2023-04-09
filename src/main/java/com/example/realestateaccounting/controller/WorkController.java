@@ -23,7 +23,7 @@ public class WorkController {
     
     @GetMapping()
     public List<WorkDto> index(){
-        return workMapper.maptoWorkDtoList(workService.index());
+        return workMapper.mapToWorkDtoList(workService.index());
     }
 
     @PostMapping("/new")

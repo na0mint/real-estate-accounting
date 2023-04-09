@@ -11,6 +11,6 @@ public interface EstateMapper {
     EstateDto mapToEstateDto(Estate estate);
     Estate mapToEstate(EstateDto estateDto);
 
-    List<EstateDto> maptoEstateDtoList(List<Estate> estateList);
+    List<EstateDto> mapToEstateDtoList(List<Estate> estateList);
     List<Estate> mapToEstateList(List<EstateDto> estateDtoList);
 }

@@ -11,6 +11,6 @@ public interface WorkMapper {
     WorkDto mapToWorkDto(Work work);
     Work mapToWork(WorkDto workDto);
 
-    List<WorkDto> maptoWorkDtoList(List<Work> workList);
+    List<WorkDto> mapToWorkDtoList(List<Work> workList);
     List<Work> mapToWorkList(List<WorkDto> workDtoList);
 }

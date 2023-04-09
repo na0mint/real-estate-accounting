@@ -48,7 +48,6 @@ public class Estate {
 
     //List<Byte[]> photos;
 
-    @OneToMany(fetch = FetchType.LAZY,
-    cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     List<Work> workList;
 }

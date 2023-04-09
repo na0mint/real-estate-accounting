@@ -24,5 +24,5 @@ public class EstateDto {
     String owner;
     String actualUser;
     //List<byte[]> photos;
-    List<Work> works;
+    List<Work> workList;
 }
