@@ -36,4 +36,19 @@ public class WorkController {
     public WorkDto showWork(@PathVariable int id){
         return workMapper.mapToWorkDto(workService.findByIndex(id));
     }
+
+    @PutMapping("/{id}/edit")
+    public WorkDto editWork(@RequestBody WorkDto editedWorkDto){
+        WorkDto workDto = workMapper.mapToWorkDto(workService.findByIndex(editedWorkDto.getId()));
+
+        workDto.setStatement(editedWorkDto.getStatement());
+        workDto.setResponsible(editedWorkDto.getResponsible());
+        workDto.setExpirationDate(editedWorkDto.getExpirationDate());
+        workDto.setPublishingDate(editedWorkDto.getExpirationDate());
+
+        workService.save(workMapper.mapToWork(workDto));
+
+        return workDto;
+    }
 }
+
