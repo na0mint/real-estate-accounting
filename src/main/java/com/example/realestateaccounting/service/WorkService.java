@@ -11,4 +11,6 @@ public interface WorkService {
     List<Work> findWorksByPublishingDate(Date publishingDate);
     List<Work> findWorksByObjectType(String type);
     List<Work> findWorksInProgress();
+    List<Work> index();
+    Work findByIndex(int id);
 }

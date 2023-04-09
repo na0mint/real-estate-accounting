@@ -42,4 +42,12 @@ public class WorkServiceImpl implements WorkService {
     public List<Work> findWorksInProgress() {
         return (List<Work>) workRepository.findByIsDoneFalse();
     }
+
+    public List<Work> index(){
+        return workRepository.findAll();
+    }
+
+    public Work findByIndex(int id){
+        return workRepository.findById(id).orElse(new Work());
+    }
 }
