@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Estates</title>
+</head>
+<body>
+
+<a href="/estate/new">Create new estate</a>
+
+<div th:each="estate : ${estates}">
+    <a th:href="@{/estate/{id}(id=${estate.getId()})}"
+       th:text="${estate.getAddress() + ', Owner: ' + estate.getOwner()}">estate</a>
+</div>
+
+<br/>
+<hr/>
+
+</body>
+</html>
