@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -24,5 +26,10 @@ public class EstateServiceImpl implements EstateService {
         log.info("Удален объект с идентификатором {} по адресу {}", estate.getId(), estate.getAddress());
         estateRepository.delete(estate);
         return estate;
+    }
+
+    @Override
+    public List<Estate> index() {
+        return estateRepository.findAll();
     }
 }
