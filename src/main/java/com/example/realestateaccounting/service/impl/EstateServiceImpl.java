@@ -1,8 +1,8 @@
 package com.example.realestateaccounting.service.impl;
 
 import com.example.realestateaccounting.model.Estate;
-import com.example.realestateaccounting.repository.EstateRepository;
 import com.example.realestateaccounting.service.EstateService;
+import com.example.realestateaccounting.repository.EstateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

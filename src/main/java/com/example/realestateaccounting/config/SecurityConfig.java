@@ -28,6 +28,7 @@ public class SecurityConfig {
                 .requestMatchers("/estate/{id}/works").permitAll()
                 .requestMatchers("/work").permitAll()
                 .requestMatchers("/work/new").permitAll()
+                .requestMatchers("/work/new/{id}").permitAll()
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/work/{id}").permitAll()
                 .requestMatchers("/work/{id}/edit").permitAll()

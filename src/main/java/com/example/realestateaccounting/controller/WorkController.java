@@ -1,12 +1,14 @@
 package com.example.realestateaccounting.controller;
 
+import com.example.realestateaccounting.dto.EstateDto;
 import com.example.realestateaccounting.dto.WorkDto;
+import com.example.realestateaccounting.dto.mapper.EstateMapper;
 import com.example.realestateaccounting.dto.mapper.WorkMapper;
+import com.example.realestateaccounting.service.EstateService;
 import com.example.realestateaccounting.service.WorkService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.jdbc.Work;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,22 +20,29 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WorkController {
     WorkService workService;
+    EstateService estateService;
     WorkMapper workMapper;
- 
-    
+    EstateMapper estateMapper;
+
     @GetMapping()
-    public List<WorkDto> index(){
+    public List<WorkDto> index() {
         return workMapper.mapToWorkDtoList(workService.index());
     }
 
-    @PostMapping("/new")
+    @PostMapping("/new/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public WorkDto addWork(@RequestBody WorkDto workDto){
-        return workMapper.mapToWorkDto(workService.save(workMapper.mapToWork(workDto)));
+    public WorkDto addWork(@PathVariable int id, @RequestBody WorkDto workDto) {
+        EstateDto estateDto = estateMapper.mapToEstateDto(estateService.findById(id));
+
+        estateDto.getWorkList().add(workMapper.mapToWork(workDto));
+
+        estateService.save(estateMapper.mapToEstate(estateDto));
+
+        return workDto;
     }
 
     @GetMapping("/{id}")
-    public WorkDto showWork(@PathVariable int id){
+    public WorkDto showWork(@PathVariable int id) {
         return workMapper.mapToWorkDto(workService.findById(id));
     }
 

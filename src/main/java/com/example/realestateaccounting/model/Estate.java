@@ -2,7 +2,6 @@ package com.example.realestateaccounting.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -28,7 +27,7 @@ public class Estate {
     String address;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern="dd-MM-yyyy")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     Date publishingDate;
 
     //@NotBlank(message = "Необходимо выбрать тип объекта")
