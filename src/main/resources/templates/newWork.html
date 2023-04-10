@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Сервис для работы с решениями</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+    form {
+      display: flex;
+      width: 100%;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 9px;
+      flex-direction: column;
+      align-content: center;
+    }
+    label {
+      margin-top: 0.5rem;
+    }
+    input, select, textarea {
+      margin-top: 0.25rem;
+      padding: 0.25rem;
+    }
+    button {
+      margin-top: 1rem;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Добавление работы</h1>
+  <form id="objectForm">
+    <div>
+      <label for="objectName">Название Работы:</label>
+      <input type="text" id="objectName" required="">
+    </div>
+    <div>
+      <label for="objectDesc">Описание Работы:</label>
+      <textarea id="objectDesc" required=""></textarea>
+    </div>
+    <div>
+      <label for="workType">Тип проводимых работ:</label>
+      <select id="workType" required="">
+        <option value="Тип работы 1">Тип работы 1</option>
+        <option value="Тип работы 2">Тип работы 2</option>
+        <option value="Тип работы 3">Тип работы 3</option>
+      </select>
+    </div>
+    <div>
+      <label for="objectState">Состояние объекта:</label>
+      <select id="objectState" required="">
+        <option value="Состояние 1">Состояние 1</option>
+        <option value="Состояние 2">Состояние 2</option>
+        <option value="Состояние 3">Состояние 3</option>
+      </select>
+    </div>
+    <div>
+      <label for="objectResponsible">Ответственный:</label>
+      <input type="text" id="objectResponsible" required="">
+    </div>
+    <div>
+      <label for="objectDueDate">Срок исполнения:</label>
+      <input type="date" id="objectDueDate" required="">
+    </div>
+    <div>
+      <label for="objectFiles">Загрузить фото/видеоматериалы:</label>
+      <input type="file" id="objectFiles" multiple="" accept="image/*, video/*">
+    </div>
+
+    <div id="preview"></div>
+
+    <button type="submit">Добавить объект</button>
+  </form>
+
+  <button id="exportJson">Скачать отчет</button>
+  <h2>Таблица объектов</h2>
+  <table>
+    <thead>
+    <tr>
+      <th>Название объекта</th>
+      <th>Описание объекта</th>
+      <th>Тип работы</th>
+    </tr>
+    </thead>
+    <tbody id="objectTable"></tbody>
+  </table>
+</div>
+
+<script>
+  const objectForm = document.getElementById('objectForm');
+  const objectFilesInput = document.getElementById('objectFiles');
+  const previewContainer = document.getElementById('preview');
+  const objectTable = document.getElementById('objectTable');
+  const exportJsonBtn = document.getElementById('exportJson');
+  let objects = [];
+
+  objectForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    let object = {
+      name: document.getElementById('objectName').value,
+      desc: document.getElementById('objectDesc').value,
+      workType: document.getElementById('workType').value,
+      files: Array.from(objectFilesInput.files)
+    };
+
+    objects.push(object);
+    addObjectToTable(object);
+    objectForm.reset();
+    previewContainer.innerHTML = '';
+
+    const formData = new FormData();
+    for (const [key, value] of Object.entries(object)) {
+      if (key === 'files') {
+        value.forEach((file, index) => {
+          formData.append(`files[${index}]`, file);
+        });
+      } else {
+        formData.append(key, value);
+      }
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8080/work/new/?${object.id}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
+  });
+
+  objectFilesInput.addEventListener('change', function() {
+    previewContainer.innerHTML = '';
+
+    Array.from(objectFilesInput.files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.src = e.target.result;
+        previewContainer.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  function addObjectToTable(object) {
+    const row = document.createElement('tr');
+
+    Object.keys(object).forEach(key => {
+      if (key !== 'files') {
+        const cell = document.createElement('td');
+        cell.textContent = object[key];
+        if (key === 'name') {
+          const link = document.createElement('a');
+          link.href = 'another_page.html';
+          link.textContent = object[key];
+          cell.innerHTML = '';
+          cell.appendChild(link);
+        }
+        row.appendChild(cell);
+      }
+    });
+
+    objectTable.appendChild(row);
+  }
+
+  exportJsonBtn.addEventListener('click', function() {
+    const json = JSON.stringify(objects, null, 2);
+    const blob = new Blob([json], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'objects.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+</script>
+
+</body>
+</html>
+

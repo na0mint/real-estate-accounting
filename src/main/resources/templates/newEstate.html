@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Service</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+        }
+        form {
+            display: flex;
+            width: 100%;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 9px;
+            flex-direction: column;
+            align-content: center;
+        }
+        label {
+            margin-top: 0.5rem;
+        }
+        input, select, textarea {
+            margin-top: 0.25rem;
+            padding: 0.25rem;
+        }
+        button {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Control Service</h1>
+
+    <form id="objectForm">
+        <div>
+            <label for="region">Регион:</label>
+            <select id="region" name="region" required>
+                <option value="region1">Регион 1</option>
+                <option value="region2">Регион 2</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="district">Округ:</label>
+            <select id="district" name="district" required>
+                <option value="district1">Округ 1</option>
+                <option value="district2">Округ 2</option>
+            </select>
+        </div>
+        <div>
+            <label for="address">Адрес:</label>
+            <input type="text" id="address" name="address" required>
+        </div>
+        <div>
+            <label for="type">Тип объекта:</label>
+            <select id="type" name="type" required>
+                <option value="type1">Тип 1</option>
+                <option value="type2">Тип 2</option>
+            </select>
+        </div>
+        <div>
+            <label for="state">Состояние объекта:</label>
+            <input type="text" id="state" name="state" required>
+        </div>
+        <div>
+            <label for="area">Площадь объекта:</label>
+            <input type="number" id="area" name="area" required>
+        </div>
+        <div>
+            <label for="owner">Собственник:</label>
+            <input type="text" id="owner" name="owner" required>
+        </div>
+        <div>
+            <label for="user">Фактический пользователь:</label>
+            <input type="text" id="user" name="user" required>
+        </div>
+        <div>
+            <label for="media">Фото/видеоматериалы:</label>
+            <br>
+            <input type="file" id="media" name="media" multiple>
+        </div>
+        <div>
+            <label for="deadline">Контрольная дата:</label>
+            <input type="date" id="deadline" name="deadline" required>
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+        </div>
+        <button type="submit">Добавить объект</button>
+    </form>
+</div>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+<div class="search">
+    <label for="search">Поиск объекта:</label>
+    <input type="text" id="search" name="search">
+    <button id="searchButton">Найти</button>
+</div>
+<script>
+    const objectForm = document.getElementById('objectForm');
+    const searchButton = document.getElementById('searchButton');
+    const searchInput = document.getElementById('search');
+    const latitudeInput = document.getElementById('latitude');
+    const longitudeInput = document.getElementById('longitude');
+
+    objectForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        await addObject();
+        objectForm.reset();
+    });
+
+    async function sendPostRequest(data) {
+        try {
+            const response = await fetch('http://localhost:8080/estate/new', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+        }
+    }
+
+    async function addObject() {
+        const formData = new FormData(objectForm);
+        const data = Object.fromEntries(formData.entries());
+        const result = await sendPostRequest(data);
+    }
+
+    searchButton.addEventListener('click', function () {
+        const searchText = searchInput.value.toLowerCase().trim();
+
+        // В данной версии кода нет таблицы, поэтому поиск по таблице и изменение стиля строк не требуется.
+    });
+
+    const map = L.map('map').setView([51.505, -0.09], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);

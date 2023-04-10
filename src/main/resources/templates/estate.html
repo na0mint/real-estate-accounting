@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            gap: 9px;
+        }
+        label {
+            margin-top: 0.5rem;
+        }
+        input, select, textarea {
+            margin-top: 0.25rem;
+            padding: 0.25rem;
+        }
+        button {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Object Details</h1>
+
+    <form id="objectForm">
+        <label for="region">Регион:</label>
+        <input type="text" id="region" name="region" readonly>
+        <label for="district">Округ:</label>
+        <input type="text" id="district" name="district" readonly>
+        <label for="type">Тип объекта:</label>
+        <input type="text" id="type" name="type" readonly>
+        <!-- Добавить. -->
+        <!-- ... -->
+        <button type="button" id="editButton">Редактировать</button>
+        <button type="submit" id="saveButton" style="display: none;">Сохранить</button>
+    </form>
+</div>
+
+<script>
+    const objectForm = document.getElementById('objectForm');
+    const editButton = document.getElementById('editButton');
+    const saveButton = document.getElementById('saveButton');
+
+    async function fetchObjectData() {
+        const objectId = new URLSearchParams(window.location.search).get('id');
+        const response = await fetch(`/api/object_data?id=${objectId}`);
+        const data = await response.json();
+        for (const key in data) {
+            const input = objectForm[key];
+            if (input) {
+                input.value = data[key];
+            }
+        }
+    }
+
+    fetchObjectData();
+
+    editButton.addEventListener('click', function() {
+        Array.from(objectForm.elements).forEach(input => {
+            input.readOnly = false;
+        });
+        editButton.style.display = 'none';
+        saveButton.style.display = 'block';
+    });
+
+    objectForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(objectForm);
+        const data = Object.fromEntries(formData.entries());
+        await fetch('/api/update_object', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+    });
+
+    objectForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(objectForm);
+        const data = Object.fromEntries(formData.entries());
+        await fetch('/estate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        Array.from(objectForm.elements).forEach(input => {
+            input.readOnly = true;
+        });
+        editButton.style.display = 'block';
+        saveButton.style.display = 'none';
+    });
+</script>
+</body>
+</html>

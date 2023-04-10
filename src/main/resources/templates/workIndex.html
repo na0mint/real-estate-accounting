@@ -1,10 +1,104 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<!-- saved from url=(0069)file:///C:/Users/sashu/Downloads/Telegram%20Desktop/table_worked.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Service</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 0.5rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
+    <h1>Control Service</h1>
 
-</body>
-</html>
+    <table id="objectsTable">
+        <thead>
+        <tr>
+            <th>формулировка </th>
+            <th>Дата оканчания</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Здесь будут добавлены строки с данными -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const objectsTable = document.getElementById('objectsTable');
+
+    async function sendGetRequest(url) {
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+        }
+    }
+
+    function createTableRow(objectData) {
+        const row = document.createElement('tr');
+
+        const regionCell = document.createElement('td');
+        regionCell.textContent = objectData.region;
+        row.appendChild(regionCell);
+
+        const districtCell = document.createElement('td');
+        districtCell.textContent = objectData.district;
+        row.appendChild(districtCell);
+
+        const typeCell = document.createElement('td');
+        typeCell.textContent = objectData.type;
+        row.appendChild(typeCell);
+
+        row.addEventListener('click', () => {
+            GET-запрос для открытия страницы объекта
+            window.location.href = `/work/?id=${objectData.id}`;
+        });
+
+        return row;
+    }
+
+    async function fillTable() {
+        const objectsData = await sendGetRequest('/api/your_endpoint');
+
+        objectsData.forEach(objectData => {
+            const row = createTableRow(objectData);
+            objectsTable.querySelector('tbody').appendChild(row);
+        });
+    }
+
+    fillTable();
+</script>
+
+
+</body></html>

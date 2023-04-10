@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Service</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,22 +15,6 @@
             flex-direction: column;
             align-items: center;
             padding: 1rem;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            margin-bottom: 1rem;
-        }
-        label {
-            margin-top: 0.5rem;
-        }
-        input, select, textarea {
-            margin-top: 0.25rem;
-            padding: 0.25rem;
-        }
-        button {
-            margin-top: 1rem;
         }
         table {
             border-collapse: collapse;
@@ -51,263 +33,72 @@
 <body>
 <div class="container">
     <h1>Control Service</h1>
-    <form id="objectForm">
-        <label for="region">Регион:</label>
-        <select id="region" name="region" required>
-            <option value="region1">Регион 1</option>
-            <option value="region2">Регион 2</option>
-        </select>
 
-        <label for="district">Округ:</label>
-        <select id="district" name="district" required>
-            <option value="district1">Округ 1</option>
-            <option value="district2">Округ 2</option>
-        </select>
-
-        <label for="address">Адрес:</label>
-        <input type="text" id="address" name="address" required>
-
-        <label for="type">Тип объекта:</label>
-        <select id="type" name="type" required>
-            <option value="type1">Тип 1</option>
-            <option value="type2">Тип 2</option>
-        </select>
-
-        <label for="state">Состояние объекта:</label>
-        <input type="text" id="state" name="state" required>
-
-        <label for="area">Площадь объекта:</label>
-        <input type="number" id="area" name="area" required>
-
-        <label for="owner">Собственник:</label>
-        <input type="text" id="owner" name="owner" required>
-
-        <label for="user">Фактический пользователь:</label>
-        <input type="text" id="user" name="user" required>
-
-        <label for="media">Фото/видеоматериалы:</label>
-        <input type="file" id="media" name="media" multiple>
-
-        <label for="deadline">Контрольная дата:</label>
-        <input type="date" id="deadline" name="deadline" required>
-        <input type="hidden" id="latitude" name="latitude">
-        <input type="hidden" id="longitude" name="longitude">
-
-        <button type="submit">Добавить объект</button>
-    </form>
-
-    <label for="search">Поиск объекта:</label>
-    <input type="text" id="search" name="search">
-    <button id="searchButton">Найти</button>
-
-    <div id="map" style="height: 400px; width: 100%; margin-top: 1rem;"></div>
-
-    <table id="objectList" style="margin-top: 1rem;">
+    <table id="objectsTable">
         <thead>
         <tr>
             <th>Регион</th>
             <th>Округ</th>
-            <th>Адрес</th>
             <th>Тип объекта</th>
-            <th>Состояние объекта</th>
-            <th>Площадь объекта</th>
-            <th>Собственник</th>
-            <th>Фактический пользователь</th>
-            <th>Контрольная дата</th>
-            <th>Действия</th>
         </tr>
         </thead>
         <tbody>
+        <!-- Здесь будут добавлены строки с данными -->
         </tbody>
     </table>
 </div>
-<script>
-    const objectForm = document.getElementById('objectForm');
-    const objectList = document.getElementById('objectList');
-    const searchButton = document.getElementById('searchButton');
-    const searchInput = document.getElementById('search');
-    const latitudeInput = document.getElementById('latitude');
-    const longitudeInput = document.getElementById('longitude');
-    const map = L.map('map').setView([51.505, -0.09], 13);
-    let marker;
 
-    objectForm.addEventListener('submit', async function (event) {
-        event.preventDefault();
-        await addObject(); // Добавьте 'await' перед вызовом функции
-        objectForm.reset();
-    });
-    async function sendPostRequest(data) {
+<script>
+    const objectsTable = document.getElementById('objectsTable');
+
+    async function sendGetRequest(url) {
         try {
-            const response = await fetch('/estate/new', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
+            const response = await fetch(url);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const result = await response.json();
-            return result;
+            const data = await response.json();
+            return data;
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error);
         }
     }
 
-    async function addObject() {
-        const formData = new FormData(objectForm);
-        const data = Object.fromEntries(formData.entries());
-        const result = await sendPostRequest(data);
-
-
+    function createTableRow(objectData) {
         const row = document.createElement('tr');
 
         const regionCell = document.createElement('td');
-        regionCell.textContent = objectForm.region.value;
+        regionCell.textContent = objectData.region;
         row.appendChild(regionCell);
 
         const districtCell = document.createElement('td');
-        districtCell.textContent = objectForm.district.value;
+        districtCell.textContent = objectData.district;
         row.appendChild(districtCell);
 
-        const addressCell = document.createElement('td');
-        addressCell.textContent = objectForm.address.value;
-        row.appendChild(addressCell);
-
         const typeCell = document.createElement('td');
-        typeCell.textContent = objectForm.type.value;
+        typeCell.textContent = objectData.type;
         row.appendChild(typeCell);
 
-        const stateCell = document.createElement('td');
-        stateCell.textContent = objectForm.state.value;
-        row.appendChild(stateCell);
-
-        const areaCell = document.createElement('td');
-
-        areaCell.textContent = objectForm.area.value;
-        row.appendChild(areaCell);
-
-        const ownerCell = document.createElement('td');
-        ownerCell.textContent = objectForm.owner.value;
-        row.appendChild(ownerCell);
-
-        const userCell = document.createElement('td');
-        userCell.textContent = objectForm.user.value;
-        row.appendChild(userCell);
-
-        const deadlineCell = document.createElement('td');
-        deadlineCell.textContent = objectForm.deadline.value;
-        row.appendChild(deadlineCell);
-
-        const actionsCell = document.createElement('td');
-        const editButton = document.createElement('button');
-        editButton.textContent = 'Редактировать';
-        editButton.addEventListener('click', function () {
-            editObject(row);
+        row.addEventListener('click', () => {
+            GET-запрос для открытия страницы объекта
+            window.location.href = `/estate/?id=${objectData.id}`;
         });
-        actionsCell.appendChild(editButton);
 
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Удалить';
-        deleteButton.addEventListener('click', function () {
-            deleteObject(row);
-        });
-        actionsCell.appendChild(deleteButton);
-
-        row.appendChild(actionsCell);
-        objectList.querySelector('tbody').appendChild(row);
+        return row;
     }
 
-    function editObject(row) {
-        const cells = Array.from(row.querySelectorAll('td')).slice(0, -1);
-        cells.forEach((cell, index) => {
-            if (index < 2) {
-                const select = document.createElement('select');
-                select.innerHTML = objectForm[index === 0 ? 'region' : 'district'].innerHTML;
-                select.value = cell.textContent;
-                cell.textContent = '';
-                cell.appendChild(select);
-            } else {
-                const input = document.createElement('input');
-                input.value = cell.textContent;
-                cell.textContent = '';
-                cell.appendChild(input);
-            }
-        });
+    async function fillTable() {
+        const objectsData = await sendGetRequest('/api/your_endpoint');
 
-        const saveButton = document.createElement('button');
-        saveButton.textContent = 'Сохранить';
-        saveButton.addEventListener('click', function () {
-            saveObject(row);
+        objectsData.forEach(objectData => {
+            const row = createTableRow(objectData);
+            objectsTable.querySelector('tbody').appendChild(row);
         });
-
-        row.querySelector('td:last-child').textContent = '';
-        row.querySelector('td:last-child').appendChild(saveButton);
     }
 
-    function saveObject(row) {
-        const cells = Array.from(row.querySelectorAll('td')).slice(0, -1);
-        cells.forEach((cell, index) => {
-            const child = cell.firstElementChild;
-            cell.textContent = child.tagName === 'SELECT' ? child.options[child.selectedIndex].value : child.value;
-        });
-
-        const editButton = document.createElement('button');
-        editButton.textContent = 'Редактировать';
-        editButton.addEventListener('click', function () {
-            editObject(row);
-        });
-
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Удалить';
-        deleteButton.addEventListener('click', function () {
-            deleteObject(row);
-        });
-
-        row.querySelector('td:last-child').textContent = '';
-        row.querySelector('td:last-child').appendChild(editButton);
-        row.querySelector('td:last-child').appendChild(deleteButton);
-    }
-
-    function deleteObject(row) {
-        row.remove();
-    }
-
-    searchButton.addEventListener('click', function () {
-        const searchText = searchInput.value.toLowerCase().trim();
-        const rows = objectList.querySelectorAll('tr');
-
-        rows.forEach(row => {
-            const cells = Array.from(row.querySelectorAll('td'));
-            const rowText = cells.map(cell => cell.textContent.toLowerCase()).join(' ');
-
-            if (rowText.includes(searchText)) {
-                row.style.display = 'table-row';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    });
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    map.on('click', function (event) {
-        const coordinates = event.latlng;
-
-        if (marker) {
-            map.removeLayer(marker);
-        }
-
-        marker = L.marker(coordinates).addTo(map);
-        latitudeInput.value = coordinates.lat;
-        longitudeInput.value = coordinates.lng;
-    });
-
+    fillTable();
 </script>
 </body>
 </html>
