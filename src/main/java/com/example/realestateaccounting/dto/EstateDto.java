@@ -23,6 +23,5 @@ public class EstateDto {
     double area;
     String owner;
     String actualUser;
-    //List<byte[]> photos;
     List<Work> workList;
 }
